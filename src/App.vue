@@ -1,6 +1,8 @@
 <template>
   <div id="app">
-    <img alt="CiudadBusca logo" src="./assets/logo.svg" class="logo" />
+    <router-link to="/">
+      <img alt="CiudadBusca logo" src="./assets/logo.svg" class="logo" />
+    </router-link>
     <router-view />
     <div class="credits" id="credits">
       <p class="credits__content">
@@ -12,8 +14,9 @@
           href="https://ollorente.blogspot.com"
           target="_blank"
           class="text--white"
-          >Oscar Llorente by CiudadBusca ©</a
+          >Ollorente Diseño Gráfico</a
         >
+        para CiudadBusca ©
       </p>
     </div>
   </div>
