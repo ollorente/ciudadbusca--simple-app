@@ -152,6 +152,7 @@
       :video="item.video"
       :createdAt="item.createdAt"
       :social="item.social"
+      :status="item.status"
       :uid="item.uid"
     />
   </div>
@@ -185,6 +186,7 @@ export default {
           video: this.form.video,
           createdAt: String(Date.now()),
           social: "",
+          status: "Público",
           uid: "AlFLDDdsm7MhbBRJv2mvObczRAp1"
         };
         await console.log(JSON.stringify(info));
@@ -208,6 +210,7 @@ export default {
           video: "",
           createdAt: String(Date.now()),
           social: "",
+          status: "Público",
           uid: "AlFLDDdsm7MhbBRJv2mvObczRAp1"
         };
 
@@ -241,6 +244,7 @@ export default {
           video: videoLink,
           createdAt: String(Date.now()),
           social: "",
+          status: "Público",
           uid: "AlFLDDdsm7MhbBRJv2mvObczRAp1"
         };
 
