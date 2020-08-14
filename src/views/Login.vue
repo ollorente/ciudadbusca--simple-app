@@ -3,19 +3,13 @@
     <div class="main">
       <Navbar />
       <div class="text-center">
-        <form class="form-signin">
-          <img
-            class="mb-4"
-            src="/docs/4.5/assets/brand/bootstrap-solid.svg"
-            alt=""
-            width="72"
-            height="72"
-          />
+        <form class="form-signin" @submit.prevent="login">
           <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
 
           <label for="inputEmail" class="sr-only">Email address</label>
           <input
             type="email"
+            v-model="form.email"
             id="inputEmail"
             class="form-control"
             placeholder="Email address"
@@ -26,6 +20,7 @@
           <label for="inputPassword" class="sr-only">Password</label>
           <input
             type="password"
+            v-model="form.password"
             id="inputPassword"
             class="form-control"
             placeholder="Password"
@@ -43,12 +38,56 @@
 </template>
 
 <script>
+import axios from "axios";
+import { auth } from "@/main";
+
 import Navbar from "@/components/Navbar";
 
 export default {
   name: "Home",
   components: {
     Navbar
+  },
+  data() {
+    return {
+      form: {
+        email: null,
+        password: null
+      },
+      loggIn: false,
+      token: ""
+    };
+  },
+  created() {
+    this.getAccess();
+  },
+  methods: {
+    async login() {
+      const info = {
+        email: this.form.email,
+        password: this.form.password
+      };
+
+      await axios
+        .post(`${auth}/login`, JSON.stringify(info), {
+          headers: {
+            "Content-Type": "application/json"
+          }
+        })
+        .then(async response => {
+          await localStorage.setItem("access_token", response.data.jwt);
+          await this.$router.replace("/");
+        })
+        .catch(e => console.log(e));
+    },
+    async getAccess() {
+      const token = await localStorage.getItem("access_token");
+
+      if (token) {
+        this.loggIn = true;
+        this.token = token;
+      }
+    }
   }
 };
 </script>

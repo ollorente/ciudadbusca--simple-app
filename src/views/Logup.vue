@@ -3,19 +3,13 @@
     <div class="main">
       <Navbar />
       <div class="text-center">
-        <form class="form-signin">
-          <img
-            class="mb-4"
-            src="/docs/4.5/assets/brand/bootstrap-solid.svg"
-            alt=""
-            width="72"
-            height="72"
-          />
+        <form class="form-signin" @submit.prevent="addUser">
           <h1 class="h3 mb-3 font-weight-normal">Please sign up</h1>
 
           <label for="name" class="sr-only">Complete name</label>
           <input
-            type="email"
+            type="text"
+            v-model="form.name"
             id="name"
             class="form-control"
             placeholder="Complete name"
@@ -25,6 +19,7 @@
           <label for="email" class="sr-only">Email address *</label>
           <input
             type="email"
+            v-model="form.email"
             id="email"
             class="form-control"
             placeholder="Email address *"
@@ -34,6 +29,7 @@
           <label for="password" class="sr-only">Password *</label>
           <input
             type="password"
+            v-model="form.password"
             id="password"
             class="form-control"
             placeholder="Password *"
@@ -43,6 +39,7 @@
           <label for="password_confirm" class="sr-only">Password *</label>
           <input
             type="password"
+            v-model="form.password_confirm"
             id="password_confirm"
             class="form-control"
             placeholder="Password confirm *"
@@ -60,12 +57,58 @@
 </template>
 
 <script>
+import axios from "axios";
+import { auth, db } from "@/main";
+
 import Navbar from "@/components/Navbar";
 
 export default {
   name: "Home",
   components: {
     Navbar
+  },
+  data() {
+    return {
+      form: {
+        name: "",
+        email: "",
+        password: "",
+        password_confirm: ""
+      }
+    };
+  },
+  methods: {
+    async addUser() {
+      if (String(this.form.password) === String(this.form.password_confirm)) {
+        const info = {
+          displayName: this.form.name,
+          email: this.form.email,
+          password: this.form.password
+        };
+
+        await axios
+          .post(`${auth}/register`, JSON.stringify(info), {
+            headers: {
+              "Content-Type": "application/json"
+            }
+          })
+          .then(async response => {
+            const user = await response.data;
+
+            await axios
+              .post(`${db}/users`, JSON.stringify(user), {
+                headers: {
+                  "Content-Type": "application/json"
+                }
+              })
+              .then(() => {
+                this.$router.replace("/login");
+              })
+              .catch(e => console.log(e));
+          })
+          .catch(e => console.log(e));
+      }
+    }
   }
 };
 </script>

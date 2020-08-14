@@ -1,16 +1,38 @@
 <template>
   <div id="nav">
-    <router-link :to="{ name: 'Home' }">Home</router-link> |
-    <router-link :to="{ name: 'About' }">About</router-link> |
-    <router-link :to="{ name: 'Login' }">Login</router-link> |
-    <router-link :to="{ name: 'Logup' }">Logup</router-link>
+    <router-link :to="{ name: 'Home' }" v-if="loggIn">Home | </router-link>
+    <router-link :to="{ name: 'About' }">About | </router-link>
+    <a href="#" @click="logout" v-if="loggIn">Logout</a>
+    <router-link :to="{ name: 'Login' }" v-if="!loggIn">Login | </router-link>
+    <router-link :to="{ name: 'Logup' }" v-if="!loggIn">Logup</router-link>
   </div>
 </template>
 
 <script>
 export default {
   name: "Navbar",
-  props: {}
+  props: {},
+  data() {
+    return {
+      loggIn: false
+    };
+  },
+  created() {
+    this.getAccess();
+  },
+  methods: {
+    async logout() {
+      await localStorage.clear("access_token");
+      await this.$router.replace("/login");
+    },
+    async getAccess() {
+      const token = await localStorage.getItem("access_token");
+
+      if (token) {
+        this.loggIn = true;
+      }
+    }
+  }
 };
 </script>
 

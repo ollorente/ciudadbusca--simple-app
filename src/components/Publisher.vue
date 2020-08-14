@@ -108,7 +108,7 @@
         role="tabpanel"
         aria-labelledby="pills-video-tab"
       >
-        <form @submit.prevent="addVideo">
+        <form @submit.prevent="addPost()">
           <div class="form-group">
             <input
               type="text"
@@ -144,22 +144,31 @@
     </div>
 
     <Post
-      v-for="(item, index) in comments"
+      v-for="(item, index) in posts"
       :key="index"
-      :title="item.title"
-      :comment="item.comment"
+      :id="item._id"
+      :pageId="item.pageId"
+      :content="item.content"
       :image="item.image"
       :video="item.video"
-      :createdAt="item.createdAt"
-      :social="item.social"
+      :share="item.share"
       :status="item.status"
-      :uid="item.uid"
+      :views="item.views"
+      :createdAt="item.createdAt"
+      :isActive="item.isActive"
+      :isLock="item.isLock"
     />
+    <pre class="container">{{ $data }}</pre>
   </div>
 </template>
 
 <script>
+import axios from "axios";
+import { db } from "@/main";
+
 import Post from "@/components/Post";
+
+const uuid = localStorage.getItem("access_token");
 
 export default {
   name: "Publisher",
@@ -173,10 +182,26 @@ export default {
         title: null,
         video: null
       },
-      comments: []
+      posts: []
     };
   },
+  created() {
+    this.getPosts();
+  },
   methods: {
+    async getPosts() {
+      await axios
+        .get(`${db}/posts`, {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + uuid
+          }
+        })
+        .then(response => {
+          this.posts = response.data;
+        })
+        .catch(e => console.error({ error: `${e}` }));
+    },
     async addComment() {
       if (this.form.title != null || this.form.texto != null) {
         const info = {
@@ -187,7 +212,7 @@ export default {
           createdAt: String(Date.now()),
           social: "",
           status: "Público",
-          uid: "AlFLDDdsm7MhbBRJv2mvObczRAp1"
+          uid: uuid
         };
         await console.log(JSON.stringify(info));
         // eslint-disable-next-line no-undef
@@ -211,7 +236,7 @@ export default {
           createdAt: String(Date.now()),
           social: "",
           status: "Público",
-          uid: "AlFLDDdsm7MhbBRJv2mvObczRAp1"
+          uid: uuid
         };
 
         await console.log(JSON.stringify(info));
@@ -245,7 +270,7 @@ export default {
           createdAt: String(Date.now()),
           social: "",
           status: "Público",
-          uid: "AlFLDDdsm7MhbBRJv2mvObczRAp1"
+          uid: uuid
         };
 
         await console.log(JSON.stringify(info));
@@ -259,6 +284,33 @@ export default {
         this.form.texto = "";
         this.form.video = "";
       }
+    },
+    async addPost() {
+      const info = {
+        content:
+          "<h3>" + this.form.title + "</h3><p>" + this.form.texto + "</p>",
+        image: "",
+        video: "",
+        createdAt: String(Date.now()),
+        status: "Público"
+      };
+      console.log(info);
+      await axios
+        .post(`${db}/pages/fanargentina/posts`, info, {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + uuid
+          }
+        })
+        .then(async response => {
+          console.log(response.data);
+          this.form.title = "";
+          this.form.texto = "";
+          this.form.video = "";
+
+          await this.getPosts();
+        })
+        .catch(e => console.error(e));
     }
   }
 };
