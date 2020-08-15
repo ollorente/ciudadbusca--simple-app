@@ -158,7 +158,6 @@
       :isActive="item.isActive"
       :isLock="item.isLock"
     />
-    <pre class="container">{{ $data }}</pre>
   </div>
 </template>
 
@@ -208,7 +207,7 @@ export default {
           title: this.form.title,
           comment: this.form.texto,
           image: this.form.image,
-          video: this.form.video,
+          video: await this.codeVideo(this.form.video),
           createdAt: String(Date.now()),
           social: "",
           status: "Público",
@@ -232,7 +231,7 @@ export default {
           title: this.form.title,
           comment: this.form.texto,
           image: this.form.image,
-          video: "",
+          video: await this.codeVideo(this.form.video),
           createdAt: String(Date.now()),
           social: "",
           status: "Público",
@@ -253,20 +252,11 @@ export default {
     },
     async addVideo() {
       if (this.form.video != null) {
-        let videoLink;
-        const videoShort = this.form.video.split("https://youtu.be/")[1];
-        if (videoShort) {
-          videoLink = videoShort;
-        } else {
-          const video = this.form.video.split("=")[1];
-          videoLink = video.split("&")[0];
-        }
-
         const info = {
           title: this.form.title,
           comment: this.form.texto,
           image: "",
-          video: videoLink,
+          video: this.codeVideo(this.form.video),
           createdAt: String(Date.now()),
           social: "",
           status: "Público",
@@ -287,10 +277,9 @@ export default {
     },
     async addPost() {
       const info = {
-        content:
-          "<h3>" + this.form.title + "</h3><p>" + this.form.texto + "</p>",
+        content: this.form.title + " " + this.form.texto,
         image: "",
-        video: "",
+        video: await this.codeVideo(this.form.video),
         createdAt: String(Date.now()),
         status: "Público"
       };
@@ -311,6 +300,18 @@ export default {
           await this.getPosts();
         })
         .catch(e => console.error(e));
+    },
+    async codeVideo(id) {
+      let videoLink;
+      const videoShort = await id.split("https://youtu.be/")[1];
+      if (videoShort) {
+        videoLink = videoShort;
+      } else {
+        const video = id.split("=")[1];
+        videoLink = video.split("&")[0];
+      }
+
+      return videoLink;
     }
   }
 };

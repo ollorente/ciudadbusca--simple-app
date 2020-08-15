@@ -13,10 +13,10 @@ const routes = [
     meta: { title: `Home ${BASE_URL_TITLE}`, requiresAuth: true }
   },
   {
-    path: "/about",
-    name: "About",
-    component: () => import("../views/About.vue"),
-    meta: { title: `About ${BASE_URL_TITLE}` }
+    path: "/my-pages",
+    name: "MyPages",
+    component: () => import("../views/MyPages.vue"),
+    meta: { title: `My Pages ${BASE_URL_TITLE}`, requiresAuth: true }
   },
   {
     path: "/login",
@@ -29,6 +29,12 @@ const routes = [
     name: "Logup",
     component: () => import("../views/Logup.vue"),
     meta: { title: `Logup ${BASE_URL_TITLE}` }
+  },
+  {
+    path: "/:id",
+    name: "Page",
+    component: () => import("../views/Page.vue"),
+    meta: { title: `Page ${BASE_URL_TITLE}`, requiresAuth: true }
   },
   /* ---------- ERROR ---------- */
   {

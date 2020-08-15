@@ -1,7 +1,9 @@
 <template>
   <div id="nav">
     <router-link :to="{ name: 'Home' }" v-if="loggIn">Home | </router-link>
-    <router-link :to="{ name: 'About' }">About | </router-link>
+    <router-link :to="{ name: 'MyPages' }" v-if="loggIn"
+      >My Pages |
+    </router-link>
     <a href="#" @click="logout" v-if="loggIn">Logout</a>
     <router-link :to="{ name: 'Login' }" v-if="!loggIn">Login | </router-link>
     <router-link :to="{ name: 'Logup' }" v-if="!loggIn">Logup</router-link>

@@ -9,7 +9,7 @@
         <i class="fas fa-eye"></i>
       </a>
     </div> -->
-    <OwnerPost :dataPage="page" :status="status" :createdAt="createdAt" />
+    <OwnerPost :dataPage="pageId" :status="status" :createdAt="createdAt" />
     <img
       v-if="image"
       :src="
@@ -59,51 +59,17 @@
       <!-- <Commentary :post="id" /> -->
     </div>
   </div>
-  <!-- <div
-    class="card mb-3 py-3 border-0 text-left"
-    style="border-bottom: solid 1px var(--primary) !important;"
-  >
-    <div class="py-4">
-      <div class="media">
-        <img
-          src="https://res.cloudinary.com/dbszizqh4/image/upload/v1592198427/images_lvwix2.png"
-          class="mr-3 img-avatar"
-          alt="Usuario"
-        />
-        <div class="media-body">
-          <h5 class="mt-0 h6 font-weight-bold">{{ uid }}</h5>
-          {{ status }} | {{ createdAt }}
-        </div>
-      </div>
-    </div>
-    <h3 v-if="title" class="title h5">{{ title }}</h3>
-    <img v-if="image" :src="image" :alt="title" class="img-post" />
-    <div v-if="video" class="embed-responsive embed-responsive-16by9">
-      <iframe
-        class="embed-responsive-item"
-        :src="`https://www.youtube.com/embed/${video}?rel=0`"
-        allowfullscreen
-      ></iframe>
-    </div>
-    <div v-if="content" class="comment mt-3">{{ content }}</div>
-    <div v-if="social" class="social">{{ social }}</div>
-    <pre class="container">{{ $props }}</pre>
-  </div> -->
 </template>
 
 <script>
 import axios from "axios";
 import { db } from "@/main";
 
-/* import Commentary from "@/components/Commentary";
-import Shared from "@/components/Shared"; */
 import OwnerPost from "@/components/OwnerPost";
 
 export default {
   name: "Post",
   components: {
-    /* Commentary,
-    Shared */
     OwnerPost
   },
   props: {
@@ -131,8 +97,8 @@ export default {
     async getPage() {
       await axios
         .get(`${db}/pages/${this.$props.pageId}/id`)
-        .then(response => {
-          this.page = response.data;
+        .then(async response => {
+          this.page = await response.data;
         })
         .catch(e => console.error(e));
     },
