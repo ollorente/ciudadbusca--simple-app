@@ -17,8 +17,32 @@ const actions = {
   async fetchPage({ commit }, id) {
     await axios
       .get(`${db}/pages/${id}`)
-      .then(response => {
-        commit("setPage", response.data);
+      .then(async response => {
+        commit("setPage", {
+          id: await response.data._id,
+          name: await response.data.name,
+          slug: await response.data.slug,
+          userId: await response.data.userId,
+          geoLat: await response.data.geo.lat,
+          geoLon: await response.data.geo.lon,
+          image: await response.data.image,
+          description: await response.data.description,
+          location: await response.data.location,
+          phone: await response.data.phone,
+          mobile: await response.data.mobile,
+          countryId: await response.data.countryId._id,
+          countryIdName: await response.data.countryId.name,
+          countryIdSlug: await response.data.countryId.slug,
+          stateId: await response.data.stateId._id,
+          stateIdCode: await response.data.stateId.code,
+          stateIdName: await response.data.stateId.name,
+          cityId: await response.data.cityId._id,
+          cityIdCode: await response.data.cityId.code,
+          cityIdName: await response.data.cityId.name,
+          isActive: await response.data.isActive,
+          isLock: await response.data.isLock,
+          createdAt: await response.data.createdAt
+        });
       })
       .catch(e => {
         console.log({
@@ -30,8 +54,8 @@ const actions = {
   async fetchPages({ commit }) {
     await axios
       .get(`${db}/pages`)
-      .then(response => {
-        commit("setPages", response.data);
+      .then(async response => {
+        await commit("setPages", response.data);
       })
       .catch(e => {
         console.log({

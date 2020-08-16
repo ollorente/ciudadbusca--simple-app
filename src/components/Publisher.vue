@@ -32,7 +32,7 @@
         >Video</a
       >
     </nav>
-    <div class="tab-content mb-3" id="pills-tabContent">
+    <div class="tab-content mb-4" id="pills-tabContent">
       <div
         class="tab-pane fade show active"
         id="pills-comment"
@@ -144,7 +144,7 @@
     </div>
 
     <Post
-      v-for="(item, index) in posts"
+      v-for="(item, index) in getPosts"
       :key="index"
       :id="item._id"
       :pageId="item.pageId"
@@ -162,6 +162,7 @@
 </template>
 
 <script>
+import { mapGetters, mapActions } from "vuex";
 import axios from "axios";
 import { db } from "@/main";
 
@@ -185,22 +186,10 @@ export default {
     };
   },
   created() {
-    this.getPosts();
+    this.fetchPosts();
   },
   methods: {
-    async getPosts() {
-      await axios
-        .get(`${db}/posts`, {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: "Bearer " + uuid
-          }
-        })
-        .then(response => {
-          this.posts = response.data;
-        })
-        .catch(e => console.error({ error: `${e}` }));
-    },
+    ...mapActions(["fetchPosts"]),
     async addComment() {
       if (this.form.title != null || this.form.texto != null) {
         const info = {
@@ -285,7 +274,7 @@ export default {
       };
       console.log(info);
       await axios
-        .post(`${db}/pages/fanargentina/posts`, info, {
+        .post(`${db}/pages/${this.$route.params.id}/posts`, info, {
           headers: {
             "Content-Type": "application/json",
             Authorization: "Bearer " + uuid
@@ -313,6 +302,9 @@ export default {
 
       return videoLink;
     }
+  },
+  computed: {
+    ...mapGetters(["getPosts"])
   }
 };
 </script>

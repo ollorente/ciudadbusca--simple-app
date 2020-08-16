@@ -25,8 +25,8 @@ const actions = {
             Authorization: "Bearer " + token
           }
         })
-        .then(response => {
-          commit("setAuth", response.data);
+        .then(async response => {
+          await commit("setAuth", response.data);
         })
         .catch(e => {
           console.log({
@@ -40,14 +40,30 @@ const actions = {
     }
   },
   async fetchUser({ commit }, id) {
-    const response = await axios.get(`${db}/users/${id}`);
-
-    commit("setUser", response.data);
+    await axios
+      .get(`${db}/users/${id}`)
+      .then(async response => {
+        await commit("setUser", response.data);
+      })
+      .catch(e => {
+        console.log({
+          name: e.name,
+          msg: e.message
+        });
+      });
   },
   async fetchUsers({ commit }) {
-    const response = await axios.get(`${db}/users`);
-
-    commit("setUsers", response.data);
+    await axios
+      .get(`${db}/users`)
+      .then(async response => {
+        await commit("setUsers", response.data);
+      })
+      .catch(e => {
+        console.log({
+          name: e.name,
+          msg: e.message
+        });
+      });
   }
 };
 

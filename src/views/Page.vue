@@ -5,28 +5,31 @@
       <div class="card border-0 mb-4 text-left">
         <img
           :src="
-            page.image
-              ? page.image
+            getPage.image
+              ? getPage.image
               : `https://res.cloudinary.com/dbszizqh4/image/upload/v1562472720/default.jpg`
           "
           class="card-img-top"
-          :alt="page.slug"
+          :alt="getPage.slug"
         />
         <div class="card-body p-3">
-          <h5 class="card-title">{{ page.name }}</h5>
+          <h5 class="card-title">{{ getPage.name }}</h5>
           <p class="card-text">
-            <span>@{{ page.slug }}</span>
-            <span>{{ page.description }}</span>
-            <span>{{ page.location }}</span>
-            <span>{{ page.phone }}</span>
-            <span>{{ page.mobile }}</span>
+            <span>@{{ getPage.slug }}</span>
+            <span>{{ getPage.description }}</span>
+            <span>{{ getPage.location }}</span>
+            <span>{{ getPage.phone }}</span>
+            <span>{{ getPage.mobile }}</span>
             <small class="text-muted"
-              ><span class="text-dark">@{{ page.slug }}</span
-              ><br /><span v-if="page.cityIdName">{{ page.cityIdName }}</span
-              ><span v-if="page.stateIdName">, {{ page.stateIdName }}</span
-              ><span v-if="page.stateIdName || page.stateIdName"> - </span
-              ><span v-if="page.countryIdName">{{
-                page.countryIdName
+              ><span class="text-dark">@{{ getPage.slug }}</span
+              ><br /><span v-if="getPage.cityIdName">{{
+                getPage.cityIdName
+              }}</span
+              ><span v-if="getPage.stateIdName"
+                >, {{ getPage.stateIdName }}</span
+              ><span v-if="getPage.stateIdName || getPage.stateIdName"> - </span
+              ><span v-if="getPage.countryIdName">{{
+                getPage.countryIdName
               }}</span></small
             >
           </p>
@@ -66,7 +69,7 @@
             >Video</a
           >
         </nav>
-        <div class="tab-content mb-3" id="pills-tabContent">
+        <div class="tab-content mb-5" id="pills-tabContent">
           <div
             class="tab-pane fade show active"
             id="pills-comment"
@@ -183,7 +186,7 @@
         </div>
 
         <Post
-          v-for="(item, index) in posts"
+          v-for="(item, index) in getPostsPerPage"
           :key="index"
           :id="item._id"
           :pageId="item.pageId"
@@ -203,7 +206,6 @@
         </div>
       </div>
     </div>
-    <pre class="container text-left text-white">{{ getPostsPerPage }}</pre>
   </div>
 </template>
 
@@ -234,59 +236,57 @@ export default {
     };
   },
   created() {
-    this.getPage();
-    this.getPosts();
     this.fetchPostsPerPage(this.$route.params.id);
+    this.fetchPage(this.$route.params.id);
   },
   methods: {
-    ...mapActions(["fetchPostsPerPage"]),
-    async getPosts() {
-      await axios
-        .get(`${db}/pages/${this.$route.params.id}/posts`)
-        .then(async response => {
-          this.posts = await response.data;
-        })
-        .catch(e => console.log(e));
-    },
-    async getPage() {
-      await axios
-        .get(`${db}/pages/${this.$route.params.id}`)
-        .then(async response => {
-          this.page = {
-            _id: await response.data._id,
-            name: await response.data.name,
-            slug: await response.data.slug,
-            userId: await response.data.userId,
-            geoLat: await response.data.geo.lat,
-            geoLon: await response.data.geo.lon,
-            image: await response.data.image,
-            description: await response.data.description,
-            location: await response.data.location,
-            phone: await response.data.phone,
-            mobile: await response.data.mobile,
-            countryId: await response.data.countryId._id,
-            countryIdName: await response.data.countryId.name,
-            countryIdSlug: await response.data.countryId.slug,
-            stateId: await response.data.stateId._id,
-            stateIdCode: await response.data.stateId.code,
-            stateIdName: await response.data.stateId.name,
-            cityId: await response.data.cityId._id,
-            cityIdCode: await response.data.cityId.code,
-            cityIdName: await response.data.cityId.name,
-            isActive: await response.data.isActive,
-            isLock: await response.data.isLock,
-            createdAt: await response.data.createdAt
-          };
-        })
-        .catch(e => console.log(e));
-    },
+    ...mapActions(["fetchPage", "fetchPostsPerPage"]),
     async addComment() {},
     async addImage() {},
     async addVideo() {},
-    async addPost() {}
+    async addPost() {
+      const info = {
+        content: this.form.title + " " + this.form.texto,
+        image: "",
+        video: await this.codeVideo(this.form.video),
+        createdAt: String(Date.now()),
+        status: "Público"
+      };
+
+      await axios
+        .post(`${db}/pages/${this.$route.params.id}/posts`, info, {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + localStorage.getItem("access_token")
+          }
+        })
+        .then(async () => {
+          this.form.title = "";
+          this.form.texto = "";
+          this.form.video = "";
+
+          await this.fetchPostsPerPage(this.$route.params.id);
+        })
+        .catch(e => console.error(e));
+    },
+    async codeVideo(id) {
+      let videoLink;
+      const videoShort = await id.split("https://youtu.be/")[1];
+      if (videoShort) {
+        videoLink = videoShort;
+      } else {
+        const video = id.split("=")[1];
+        videoLink = video.split("&")[0];
+      }
+
+      return videoLink;
+    }
   },
   computed: {
-    ...mapGetters(["getPostsPerPage"])
+    ...mapGetters(["getPage", "getPostsPerPage"])
+  },
+  watch: {
+    $route: "fetchPage"
   }
 };
 </script>

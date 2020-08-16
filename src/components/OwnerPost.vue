@@ -1,17 +1,27 @@
 <template>
   <div class="media mb-3">
-    <img
-      :src="
-        page.image
-          ? page.image
-          : `https://res.cloudinary.com/dbszizqh4/image/upload/v1592198427/images_lvwix2.png`
-      "
-      class="mr-3 img-avatar"
-      alt="Usuario"
-    />
+    <router-link :to="{ name: 'Page', params: { id: page.slug } }">
+      <img
+        :src="
+          page.image
+            ? page.image
+            : `https://res.cloudinary.com/dbszizqh4/image/upload/v1592198427/images_lvwix2.png`
+        "
+        class="mr-3 img-avatar"
+        alt="Usuario"
+      />
+    </router-link>
     <div class="media-body text-left small">
-      <h5 class="m-0 h6 font-weight-bold">{{ page.name }}</h5>
-      <p class="m-0">@{{ page.slug }}</p>
+      <h5 class="m-0 h6 font-weight-bold">
+        <router-link :to="{ name: 'Page', params: { id: page.slug } }">{{
+          page.name
+        }}</router-link>
+      </h5>
+      <p class="m-0">
+        <router-link :to="{ name: 'Page', params: { id: page.slug } }"
+          >@{{ page.slug }}</router-link
+        >
+      </p>
       <p class="m-0">{{ status }} | {{ createdAt }}</p>
     </div>
   </div>
