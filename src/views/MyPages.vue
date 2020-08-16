@@ -5,7 +5,7 @@
       <h1 class="h3">My Pages</h1>
       <ul class="list-unstyled text-left">
         <router-link
-          v-for="(item, index) in myPages"
+          v-for="(item, index) in getPagesPerUser"
           :key="index"
           :to="{ name: 'Page', params: { id: item.slug } }"
         >
@@ -43,8 +43,7 @@
 </template>
 
 <script>
-import axios from "axios";
-import { auth, db } from "@/main";
+import { mapGetters, mapActions } from "vuex";
 
 import Navbar from "@/components/Navbar";
 
@@ -56,50 +55,24 @@ export default {
   data() {
     return {
       myPages: [],
-      profile: ""
+      me: ""
     };
   },
   mounted() {
-    this.getMyPages();
+    this.fetchPagesPerUser(this.getAuth.uid);
   },
   created() {
-    this.getProfile();
+    this.auth();
+    this.getProfile(this.getAuth);
   },
   methods: {
-    async getMyPages() {
-      await this.getProfile();
-      await axios
-        .get(`${db}/users/${this.profile.uid}/pages`)
-        .then(async response => {
-          this.myPages = await response.data;
-        })
-        .catch(e => console.log(e));
-    },
-    async getProfile() {
-      await axios
-        .get(`${auth}/profile`, {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: "Bearer " + localStorage.getItem("access_token")
-          }
-        })
-        .then(async response => {
-          this.profile = {
-            displayName: await response.data.displayName,
-            email: await response.data.email,
-            phoneNumber: await response.data.phoneNumber,
-            photoURL: await response.data.photoURL,
-            uid: await response.data.uid,
-            createdAt: await response.data.createdAt,
-            updatedAt: await response.data.updatedAt
-          };
-        })
-        .catch(async e => {
-          console.log(e.message);
-          await localStorage.clear("access_token");
-          await this.$router.replace("/login");
-        });
+    ...mapActions(["auth", "fetchPagesPerUser"]),
+    async getProfile(id) {
+      this.me = await id.uid;
     }
+  },
+  computed: {
+    ...mapGetters(["getAuth", "getPagesPerUser"])
   }
 };
 </script>

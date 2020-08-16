@@ -11,6 +11,8 @@
 </template>
 
 <script>
+import { mapGetters, mapActions } from "vuex";
+
 export default {
   name: "Navbar",
   props: {},
@@ -19,21 +21,26 @@ export default {
       loggIn: false
     };
   },
+  mounted() {
+    this.getAccess(this.getAuth.uid);
+  },
   created() {
-    this.getAccess();
+    this.auth();
   },
   methods: {
+    ...mapActions(["auth"]),
     async logout() {
       await localStorage.clear("access_token");
       await this.$router.replace("/login");
     },
-    async getAccess() {
-      const token = await localStorage.getItem("access_token");
-
-      if (token) {
+    async getAccess(id) {
+      if (id) {
         this.loggIn = true;
       }
     }
+  },
+  computed: {
+    ...mapGetters(["getAuth"])
   }
 };
 </script>
