@@ -76,7 +76,7 @@ export default {
         })
         .then(async response => {
           await localStorage.setItem("access_token", response.data.jwt);
-          await this.$router.replace("/");
+          await this.$router.replace("/my-pages");
         })
         .catch(e => console.log(e));
     },

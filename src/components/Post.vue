@@ -105,6 +105,9 @@ export default {
     async like(id) {
       console.log(id);
     }
+  },
+  watch: {
+    $route: "getPage"
   }
 };
 </script>

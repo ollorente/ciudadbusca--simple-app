@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="border-top pt-3">
     <nav class="nav nav-pills flex-column flex-sm-row mb-4">
       <a
         class="flex-sm-fill text-sm-center nav-link active"
@@ -32,7 +32,7 @@
         >Video</a
       >
     </nav>
-    <div class="tab-content mb-4" id="pills-tabContent">
+    <div class="tab-content mb-4 border-bottom pb-3" id="pills-tabContent">
       <div
         class="tab-pane fade show active"
         id="pills-comment"
@@ -267,7 +267,7 @@ export default {
     async addPost() {
       const info = {
         content: this.form.title + " " + this.form.texto,
-        image: "",
+        image: this.form.image,
         video: await this.codeVideo(this.form.video),
         createdAt: String(Date.now()),
         status: "Público"
@@ -305,6 +305,9 @@ export default {
   },
   computed: {
     ...mapGetters(["getPosts"])
+  },
+  watch: {
+    $$route: "getPosts"
   }
 };
 </script>

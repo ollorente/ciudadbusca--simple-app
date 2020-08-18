@@ -1,6 +1,8 @@
 import axios from "axios";
 import { db } from "@/main";
 
+const token = localStorage.getItem("access_token");
+
 const state = {
   page: "",
   pages: [],
@@ -14,6 +16,24 @@ const getters = {
 };
 
 const actions = {
+  async newPage({ commit }, id) {
+    await axios
+      .post(`${db}/pages`, JSON.stringify(id), {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + token
+        }
+      })
+      .then(async response => {
+        await commit("addPage", response.data);
+      })
+      .catch(e => {
+        console.log({
+          name: e.name,
+          msg: e.message
+        });
+      });
+  },
   async fetchPage({ commit }, id) {
     await axios
       .get(`${db}/pages/${id}`)
@@ -80,6 +100,7 @@ const actions = {
 };
 
 const mutations = {
+  addPage: (state, newPage) => (state.pagesPerUser = newPage),
   setPage: (state, page) => (state.page = page),
   setPages: (state, pages) => (state.pages = pages),
   setPagesPerUser: (state, pages) => (state.pagesPerUser = pages)

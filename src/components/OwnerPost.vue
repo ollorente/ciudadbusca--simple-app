@@ -7,7 +7,7 @@
             ? page.image
             : `https://res.cloudinary.com/dbszizqh4/image/upload/v1592198427/images_lvwix2.png`
         "
-        class="mr-3 img-avatar"
+        class="mr-3 img-avatar rounded-circle"
         alt="Usuario"
       />
     </router-link>
@@ -56,6 +56,9 @@ export default {
         })
         .catch(e => console.log(e));
     }
+  },
+  watch: {
+    $route: "getPage"
   }
 };
 </script>
